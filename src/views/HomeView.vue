@@ -1,18 +1,33 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <v-app>
+    <side-bar :items="items"></side-bar>
+    <app-bar></app-bar>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+  import AppBar from "@/layout/AppBar.vue";
+  import SideBar from "@/layout/SideBar.vue";
 
-export default {
-  name: "HomeView",
-  components: {
-    HelloWorld,
-  },
-};
+  export default {
+    name: "Home",
+    components: {
+      AppBar,
+      SideBar,
+    },
+    data: () => ({
+      drawer: null,
+      items: [
+        { title: "Profiles", icon: "mdi-movie-star", to: "/profiles" },
+        { title: "Groups", icon: "mdi-group", to: "/groups" },
+        { title: "Settings", icon: "mdi-help-box", to: "/settings" },
+        { title: "Proxy", icon: "mdi-help-box", to: "/proxy" },
+        { title: "About", icon: "mdi-help-box", to: "/about" },
+      ],
+      right: null,
+    }),
+  };
 </script>
