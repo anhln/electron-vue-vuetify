@@ -29,18 +29,25 @@ export const poxies = [
 export const proxyTypes = [
   {
     value: 1,
-    name: "HTTP_PROXY",
+    name: "HTTP",
   },
   {
     value: 2,
-    name: "HTTP_PROXY",
+    name: "HTTPS",
   },
   {
     value: 3,
-    name: "HTTP_PROXY",
+    name: "SOCKS4",
   },
   {
     value: 4,
-    name: "HTTP_PROXY",
+    name: "SOCKS5",
   },
 ];
+
+export const typeProxies = {
+  1: "HTTP",
+  2: "HTTPS",
+  3: "SOCKS4",
+  4: "SOCKS5",
+};

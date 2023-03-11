@@ -1,132 +1,166 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="desserts"
-    sort-by="calories"
-    class="elevation-1"
-  >
-    <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>Profiles</v-toolbar-title>
-        <v-divider class="mx-4" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              New Item
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
+  <div>
+    <v-data-table
+      :headers="headers"
+      :items="proxyList"
+      sort-by="calories"
+      class="elevation-1"
+      :loading="loader"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Proxies</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+                New Item
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5">{{ formTitle }}</span>
+              </v-card-title>
 
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="Dessert name"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.calories"
-                      label="Calories"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.fat"
-                      label="Fat (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.carbs"
-                      label="Carbs (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="editedItem.protein"
-                      label="Protein (g)"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-select
+                        v-model="editedItem.type"
+                        :items="typesList"
+                        item-value="value"
+                        item-text="name"
+                        label="Type Proxy"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.ipport"
+                        label="IP-Port"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.username"
+                        label="UserName"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.password"
+                        label="Password"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.status"
+                        label="Status"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5"
-              >Are you sure you want to delete this item?</v-card-title
-            >
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete"
-                >Cancel</v-btn
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">
+                  Cancel
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="text-h5"
+                >Are you sure you want to delete this item?</v-card-title
               >
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                >OK</v-btn
-              >
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-      <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-    </template>
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize"> Reset </v-btn>
-    </template>
-  </v-data-table>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                  >OK</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.type="{ item }">
+        {{ getName(item.type) }}
+      </template>
+      <template v-slot:item.status="{ item }">
+        <v-avatar size="32px" :color="item.status === 'DIE' ? 'red' : 'green'"
+          ><span class="status">{{ item.status }}</span></v-avatar
+        >
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-btn
+          class="ml-2 text-capitalize btn-check"
+          fab
+          dark
+          x-small
+          depressed
+          color="green"
+          :loading="loading(item)"
+          @click="checkStatus(item)"
+        >
+          <v-icon x-small class="">mdi-check</v-icon>
+        </v-btn>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 <script>
+  import {
+    createProxy,
+    updateProxy,
+    fetchProxyList,
+  } from "@/database/controller/welogin.controller";
   export default {
     data: () => ({
+      loader: false,
+      loadings: [],
+      typesList: ["http", "https", "socks4", "socks5"],
       dialog: false,
       dialogDelete: false,
       headers: [
         {
-          text: "Name",
+          text: "Type",
           align: "start",
           sortable: false,
-          value: "name",
+          value: "type",
         },
-        { text: "Status", value: "calories" },
-        { text: "Action", value: "fat" },
-        { text: "Notes", value: "carbs" },
-        { text: "Tags", value: "protein" },
+        { text: "IP-Port", value: "ipport" },
+        { text: "User Name", value: "username" },
+        { text: "Password", value: "password" },
+        { text: "Status", value: "status" },
         { text: "Actions", value: "actions", sortable: false },
       ],
-      desserts: [],
+      // desserts: [],
       editedIndex: -1,
       editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        type: "",
+        ipport: "0",
+        username: "",
+        password: "",
+        status: "",
       },
       defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        type: "http",
+        ipport: "0",
+        username: "0",
+        password: "0",
+        status: "0",
       },
+      proxyList: [],
     }),
 
     computed: {
@@ -144,100 +178,48 @@
       },
     },
 
-    created() {
-      this.initialize();
+    async created() {
+      this.fetchProxy();
     },
 
     methods: {
-      initialize() {
-        this.desserts = [
-          {
-            name: "Frozen Yogurt",
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
-          },
-          {
-            name: "Ice cream sandwich",
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3,
-          },
-          {
-            name: "Eclair",
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0,
-          },
-          {
-            name: "Cupcake",
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3,
-          },
-          {
-            name: "Gingerbread",
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9,
-          },
-          {
-            name: "Jelly bean",
-            calories: 375,
-            fat: 0.0,
-            carbs: 94,
-            protein: 0.0,
-          },
-          {
-            name: "Lollipop",
-            calories: 392,
-            fat: 0.2,
-            carbs: 98,
-            protein: 0,
-          },
-          {
-            name: "Honeycomb",
-            calories: 408,
-            fat: 3.2,
-            carbs: 87,
-            protein: 6.5,
-          },
-          {
-            name: "Donut",
-            calories: 452,
-            fat: 25.0,
-            carbs: 51,
-            protein: 4.9,
-          },
-          {
-            name: "KitKat",
-            calories: 518,
-            fat: 26.0,
-            carbs: 65,
-            protein: 7,
-          },
-        ];
+      async fetchProxy() {
+        this.loader = true;
+        this.proxyList = await fetchProxyList();
+        this.loader = false;
       },
-
+      loading(item) {
+        return this.loadings.includes(item);
+      },
+      getName(id) {
+        if (!id) return;
+        return id.toUpperCase();
+      },
+      async checkStatus(item) {
+        this.loadings.push(item); // = true;
+        const status = await window.ipcRenderer.invoke("checkProxy", item);
+        if (status) {
+          item.status = status;
+          await updateProxy(item);
+        }
+        const index = this.loadings.indexOf(item);
+        if (index !== -1) this.loadings.splice(index, 1);
+      },
       editItem(item) {
-        this.editedIndex = this.desserts.indexOf(item);
+        this.editedIndex = this.proxyList.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialog = true;
       },
 
       deleteItem(item) {
-        this.editedIndex = this.desserts.indexOf(item);
+        this.editedIndex = this.proxyList.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialogDelete = true;
       },
 
-      deleteItemConfirm() {
-        this.desserts.splice(this.editedIndex, 1);
+      async deleteItemConfirm() {
+        this.deleteProxy(this.editedItem);
+        this.fetchProxy();
         this.closeDelete();
       },
 
@@ -256,15 +238,46 @@
           this.editedIndex = -1;
         });
       },
-
-      save() {
+      async deleteProxy(proxy) {
+        await Proxy.destroy({ where: { id: proxy.id } }).then(
+          function (rowDeleted) {
+            // rowDeleted will return number of rows deleted
+            if (rowDeleted === 1) {
+              console.log("Deleted successfully");
+            }
+          },
+          function (err) {
+            console.log(err);
+          }
+        );
+        await Proxy.sync();
+      },
+      async save() {
         if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem);
+          console.log(this.editedItem);
+          await updateProxy(this.editedItem);
         } else {
-          this.desserts.push(this.editedItem);
+          await createProxy(this.editedItem);
         }
+        this.fetchProxy();
         this.close();
       },
     },
   };
 </script>
+<style lang="scss" scoped>
+  ::v-deep .v-data-table-header tr th {
+    background-color: #2196F3;
+    color: white !important;
+  }
+  .btn-check {
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(5, 175, 115, 0.523) !important;
+    }
+  }
+  .status {
+    color: #fff;
+    font-size: 12px;
+  }
+</style>
