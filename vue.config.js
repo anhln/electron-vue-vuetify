@@ -22,26 +22,11 @@ module.exports = defineConfig({
       mainProcessWatch: ["src/services/profileService.js"], // change to your file
       chainWebpackMainProcess: (config) => {
         config.module
-          .rule("babel")
-          .test(/\.ts$/)
-          .exclude.add(/node_modules/)
-          .end()
-          .use("babel")
-          .loader("babel-loader")
-          .options({
-            presets: [
-              [
-                "@babel/preset-env",
-                {
-                  targets: {
-                    esmodules: true,
-                  },
-                },
-              ],
-              "@babel/preset-typescript",
-            ],
-            plugins: ["@babel/plugin-proposal-class-properties"],
-          });
+          .rule("unlazy-loader")
+          .test(/\.js$/)
+          .use("unlazy-loader")
+          .loader("unlazy-loader")
+          .end();
       },
       preload: "src/electron/preload.js",
       builderOptions: {
@@ -89,6 +74,7 @@ module.exports = defineConfig({
         "puppeteer-extra-plugin-anonymize-ua",
         "./profiles/cookiesExtraPlugin",
         "helloWorldPlugin",
+        "puppeteer-extra-plugin-stealth/evasions/navigator.vendor",
       ],
       nodeModulesPath: ["./node_modules", "./src/services/profiles"],
     },

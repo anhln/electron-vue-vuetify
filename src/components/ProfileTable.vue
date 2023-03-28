@@ -11,65 +11,8 @@
           <v-toolbar-title>Profiles</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn>New Profiles</v-btn>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                New Item
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
+          <v-btn @click="profileDialog = true">New Profiles</v-btn>
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.name"
-                        label="Profile name"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.calories"
-                        label="Status"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedItem.ProxyId"
-                        :items="proxiesList"
-                        item-value="id"
-                        item-text="name"
-                        outlined
-                      >
-                      </v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.carbs"
-                        label="Note"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="text-h5"
@@ -107,7 +50,11 @@
         </v-btn>
       </template>
     </v-data-table>
-    <profile-dialog v-model="profileDialog"></profile-dialog>
+    <profile-dialog
+      v-model="profileDialog"
+      @save="save"
+      :profileItem="editedItem"
+    ></profile-dialog>
   </div>
 </template>
 <script>
@@ -145,13 +92,7 @@
       ],
       desserts: [],
       editedIndex: -1,
-      editedItem: {
-        name: "",
-        status: 0,
-        proxy: 0,
-        lastRunning: 0,
-        note: 0,
-      },
+      editedItem: {},
       defaultItem: {
         name: "",
         status: 0,
@@ -177,13 +118,6 @@
     },
 
     async created() {
-      // await Profile.create({
-      //   name: "profile 1",
-      //   status: "OK",
-      //   note: "test note",
-      //   proxyId: 1,
-      // });
-      // await Profile.sync();
       await this.fetchProfileList();
       const proxies = await fetchProxyList();
       this.proxiesList = proxies.map((currentItem) => {
@@ -195,16 +129,19 @@
     },
     methods: {
       async openBrowser(item) {
-        console.log("item", item);
         const proxy = {
-          url:
-            `${item["Proxy.type"]}://${item["Proxy.ipport"]}` ||
-            "socks://13.127.55.36:80",
+          url: item["ProxyId"]
+            ? `${item["Proxy.type"]}://${item["Proxy.ipport"]}`
+            : "",
           username: "",
           password: "",
+          profileName: item.name,
+          userAgent: item.userAgent,
         };
         console.log(proxy);
-        await window.ipcRenderer.invoke("connect", proxy);
+        // await window.ipcRenderer.invoke("connect", proxy);
+        await window.ipcRenderer.invoke("connectWithExtra", proxy);
+
         console.log("OPENED", proxy);
       },
       getName(item) {
@@ -220,7 +157,7 @@
       editItem(item) {
         this.editedIndex = this.profileList.indexOf(item);
         this.editedItem = Object.assign({}, item);
-        // this.dialog = true;
+        console.log(this.editedItem);
         this.profileDialog = true;
       },
 
@@ -236,9 +173,9 @@
       },
 
       close() {
-        this.dialog = false;
+        this.profileDialog = false;
         this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedItem = {};
           this.editedIndex = -1;
         });
       },
@@ -246,17 +183,18 @@
       closeDelete() {
         this.dialogDelete = false;
         this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedItem = {};
           this.editedIndex = -1;
         });
       },
-      async save() {
-        if (this.editedIndex > -1) {
-          console.log(this.editedItem);
-          const result = await updateProfile(this.editedItem);
-          console.log(result);
+      async save(item) {
+        console.log("result", item);
+        if (!item?.id) {
+          await createProfile(item);
         } else {
-          await createProfile(this.editedItem);
+          // console.log(this.editedItem);
+          const result = await updateProfile(item);
+          console.log(result);
         }
         this.fetchProfileList();
         this.close();

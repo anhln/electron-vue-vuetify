@@ -1,13 +1,14 @@
 import puppeteer from "puppeteer";
 const path = require("path");
 const app = require("electron").app;
+import NavigatorVendorPlugin from "puppeteer-extra-plugin-stealth/evasions/navigator.vendor";
 
 const settingFolder = path.join(app.getPath("documents"), "welogin");
 // import cookiesExtraPlugin from "./profiles/cookiesExtraPlugin";
 // import HelloWorldPlugin from "./profiles/helloWorldPlugin";
 
 export const connect = async function (proxy) {
-  const { url, username, password } = proxy;
+  const { url, username, password, profileName } = proxy;
 
   // 1. const options = generateOptions()
   // 2. open browser from puppeteer
@@ -28,8 +29,16 @@ export const connect = async function (proxy) {
   // );
   const options = {
     headless: false,
+    args: [
+      "--no-sandbox",
+      "--enable-features=NetworkService",
+      "--ignore-certificate-errors",
+      `--proxy-server=${url}`,
+      `--user-data-dir=${settingFolder}/${profileName}`,
+    ],
   };
   const browser = await puppeteer.launch(options);
+  console.log(browser);
   const page = (await browser.pages())[0];
   await page.setUserAgent(
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
@@ -46,7 +55,18 @@ export const connect = async function (proxy) {
 };
 
 export const connectWithExtra = async function (proxy) {
-  const { url, username, password } = proxy;
+  const { url, username, password, profileName, userAgent } = proxy;
+  const options = {
+    headless: false,
+    args: [
+      "--disable-webgl",
+      "--no-sandbox",
+      "--enable-features=NetworkService",
+      "--ignore-certificate-errors",
+      `--proxy-server=${url}`,
+      `--user-data-dir=${settingFolder}/${profileName}`,
+    ],
+  };
   // puppeteer-extra is a drop-in replacement for puppeteer,
   // it augments the installed puppeteer with plugin functionality
   const puppeteer = require("puppeteer-extra");
@@ -56,6 +76,7 @@ export const connectWithExtra = async function (proxy) {
   const stealth = StealthPlugin();
   // Remove this specific stealth plugin from the default set
   stealth.enabledEvasions.delete("user-agent-override");
+  // stealth.enabledEvasions.delete("navigator.vendor");
   puppeteer.use(stealth);
 
   // // Stealth plugins are just regular `puppeteer-extra` plugins and can be added as such
@@ -68,9 +89,13 @@ export const connectWithExtra = async function (proxy) {
   // stealth.enabledEvasions.push(ua);
   puppeteer.use(
     require("puppeteer-extra-plugin-anonymize-ua")({
-      customFn: (ua) => "MyCoolAgent/" + ua.replace("Chrome", "Beer"),
+      customFn: (ua) => `${userAgent}`, //+ ${ua.replace("Chrome", "Beer")}`,
     })
   );
+  // Stealth plugins are just regular `puppeteer-extra` plugins and can be added as such
+
+  // const nvp = NavigatorVendorPlugin({ vendor: "Apple Computer, Inc." }); // Custom vendor
+  // puppeteer.use(nvp);
 
   // inject cusome plugin
   // const customPlugin = require("./profiles/cookiesExtraPlugin");
@@ -84,13 +109,14 @@ export const connectWithExtra = async function (proxy) {
 
   // puppeteer usage as normal
   puppeteer
-    .launch({
-      headless: false,
-      args: [
-        // `--proxy-server=${url}`,
-        `--user-data-dir=${settingFolder}/profile_2`,
-      ],
-    })
+    // .launch({
+    //   headless: false,
+    //   args: [
+    //     // `--proxy-server=${url}`,
+    //     `--user-data-dir=${settingFolder}/profile_2`,
+    //   ],
+    // })
+    .launch(options)
     .then(async (browser) => {
       console.log("Running tests..");
       const page = await browser.newPage();

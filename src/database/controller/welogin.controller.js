@@ -70,8 +70,19 @@ export const createProfile = (profile) => {
   Profile.create({
     name: profile.name,
     note: profile.note,
-    proxyId: profile.proxyId,
-    groupId: profile.groupId,
+    ProxyId: profile.ProxyId,
+    GroupId: profile.GroupId,
+    timezone: profile.timezone,
+    webrtc: profile.webrtc,
+    geolocation: profile.geolocation,
+    browser: profile.browser,
+    os: profile.os,
+    userAgent: profile.userAgent,
+    urlStart: profile.urlStart,
+    osFont: profile.osFont,
+    screenSize: profile.screenSize,
+    canvasMode: profile.canvasMode,
+    webglRenderer: profile.webglRenderer,
   });
 };
 
@@ -82,6 +93,17 @@ export const updateProfile = (profile) => {
       note: profile.description,
       ProxyId: profile.ProxyId,
       GroupId: profile.GroupId,
+      timezone: profile.timezone,
+      webrtc: profile.webrtc,
+      geolocation: profile.geolocation,
+      browser: profile.browser,
+      os: profile.os,
+      userAgent: profile.userAgent,
+      urlStart: profile.urlStart,
+      osFont: profile.osFont,
+      screenSize: profile.screenSize,
+      canvasMode: profile.canvasMode,
+      webglRenderer: profile.webglRenderer,
     },
     { where: { id: profile.id } }
   );

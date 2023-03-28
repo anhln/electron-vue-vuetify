@@ -23,7 +23,7 @@
       items: [
         { title: "Profiles", icon: "mdi-movie-star", to: "/profiles" },
         { title: "Groups", icon: "mdi-group", to: "/groups" },
-        { title: "Settings", icon: "mdi-account-settings", to: "/settings" },
+        { title: "Settings", icon: "mdi-cog", to: "/settings" },
         { title: "Proxy", icon: "mdi-cloud-check", to: "/proxy" },
         { title: "About", icon: "mdi-help-box", to: "/about" },
       ],

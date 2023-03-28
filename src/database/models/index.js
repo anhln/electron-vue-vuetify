@@ -34,7 +34,7 @@ db.proxies.hasMany(db.profiles);
 db.groups.hasMany(db.profiles);
 db.profiles.belongsTo(db.proxies);
 // db.sequelize.sync({
-//   force: true,
+//   alter: true,
 // });
 
 export default db;
