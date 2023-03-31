@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid>
-    <h1>Proxy</h1>
+  <v-container fluid class="pa-6">
     <proxy-table></proxy-table>
   </v-container>
 </template>

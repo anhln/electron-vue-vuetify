@@ -1,0 +1,46 @@
+/*----------------Variables-------------------*/
+$blue-base: #03A9F4;
+$black-base: #333333;
+
+h1 {
+    font-size: 2.0rem;
+    font-weight: 700;
+    color: $black-base;
+}
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $black-base;
+}
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $black-base;
+}
+
+.btn-default {
+    ::v-deep .v-btn__content{
+        text-transform: none;
+    }
+}
+.btn-ok {
+    @extend .btn-default;
+    background-color: $blue-base !important;
+    color: white;
+}
+.btn-run {
+    @extend .btn-default;
+    background-color: white !important;;
+    border: 1px solid $blue-base !important;
+    color: $blue-base;
+}
+.table-default {
+    ::v-deep .v-data-table-header tr th {
+        background-color: #03A9F4;
+        color: white !important;
+      }
+      ::v-deep .v-data-table__wrapper{
+        border-left: 1px solid #EEEEEE;
+        border-right: 1px solid #EEEEEE;
+      }
+}

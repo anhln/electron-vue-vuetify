@@ -4,18 +4,18 @@
       :headers="headers"
       :items="proxyList"
       sort-by="calories"
-      class="elevation-1"
       :loading="loader"
+      class="table-default"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="table-toolbar" height="56px">
           <v-toolbar-title>Proxies</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                New Item
+              <v-btn color="#03A9F4" dark class="btn-default" v-bind="attrs" v-on="on">
+                ADD PROXY
               </v-btn>
             </template>
             <v-card>
@@ -144,7 +144,6 @@
         { text: "Status", value: "status" },
         { text: "Actions", value: "actions", sortable: false },
       ],
-      // desserts: [],
       editedIndex: -1,
       editedItem: {
         type: "",
@@ -266,9 +265,10 @@
   };
 </script>
 <style lang="scss" scoped>
-  ::v-deep .v-data-table-header tr th {
-    background-color: #2196F3;
-    color: white !important;
+  .table-toolbar {
+  ::v-deep .v-toolbar__content {
+    padding: 0px !important;
+    }
   }
   .btn-check {
     &:hover {

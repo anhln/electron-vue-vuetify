@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" max-width="900px">
+  <v-dialog :value="value" min-width="700px">
     <v-card>
       <v-card-title
         ><v-icon class="mr-2" color="blue">mdi-account-circle</v-icon>
@@ -46,77 +46,7 @@
               </v-tabs>
               <v-tabs-items v-model="tab">
                 <v-tab-item>
-                  <v-card flat class="pt-4">
-                    <v-card-text>
-                      <v-row class="text-align-center">
-                        <div><h4>IP</h4></div>
-                        <v-select
-                          class="ml-2"
-                          dense
-                          outlined
-                          clearable
-                          :items="proxiesList"
-                          item-text="name"
-                          item-value="id"
-                          v-model="editedItem.ProxyId"
-                        ></v-select>
-                        <v-btn class="ml-2 btn">Check</v-btn>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>Timezone</h4></div>
-                          <v-select
-                            class="ml-2"
-                            dense
-                            outlined
-                            :items="timezonesList"
-                            clearable
-                            v-model="editedItem.timezone"
-                          >
-                            <template v-slot:prepend-item>
-                              <v-list-item>
-                                <v-list-item-content>
-                                  <v-text-field
-                                    v-model="searchTerm"
-                                    placeholder="Search"
-                                    @input="searchTimezones"
-                                  ></v-text-field>
-                                </v-list-item-content>
-                              </v-list-item>
-                              <v-divider class="mt-2"></v-divider> </template
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>WebRTC IP</h4></div>
-                          <v-select
-                            class="ml-2"
-                            dense
-                            outlined
-                            :items="webrtcList"
-                            item-text="name"
-                            item-value="id"
-                            v-model="editedItem.webrtc"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>GEO Location</h4></div>
-                          <v-select
-                            class="ml-2"
-                            dense
-                            outlined
-                            :items="GEOLocation"
-                            item-text="name"
-                            item-value="id"
-                            v-model="editedItem.geolocation"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
+                  <connection-tab v-model="editedItem"></connection-tab>
                 </v-tab-item>
                 <v-tab-item>
                   <v-card flat class="pt-4">
@@ -215,9 +145,10 @@
         </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-spacer /><v-btn @click="close">cancel</v-btn>
-        <v-btn>OK</v-btn></v-card-actions
-      >
+        <v-spacer />
+        <v-btn @click="close">cancel</v-btn>
+        <v-btn class="btn-ok">OK</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -228,8 +159,10 @@
   } from "@/database/controller/welogin.controller";
   import { aryIannaTimeZones } from "@/utils/timezones";
   import { generateFileName } from "@/utils/file";
-  import { webrtcList, GEOLocation, ResolutionList } from "@/utils/webRTC";
+  import { webrtcList, ResolutionList } from "@/utils/webRTC";
   import _ from "lodash";
+
+  import ConnectionTab from "./ConnectionTab.vue";
 
   export default {
     name: "ProfileDialog",
@@ -243,11 +176,12 @@
         default: () => {},
       },
     },
+    components: {
+      ConnectionTab,
+    },
     data: () => {
       return {
         profileName: "",
-        webrtcList: [],
-        GEOLocation: GEOLocation,
         resolutionList: ResolutionList,
         searchTerm: "",
         selectedTimezone: "",
@@ -353,6 +287,9 @@
   }
   .tab-item {
     text-transform: none;
+    &.v-tab--active {
+      background-color: #fff9c4;
+    }
   }
   .list-summary {
     background-color: #f5f5f5;

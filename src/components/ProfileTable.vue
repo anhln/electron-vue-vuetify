@@ -4,15 +4,16 @@
       :headers="headers"
       :items="profileList"
       sort-by="calories"
-      class="elevation-1"
+      class="table-default"
     >
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Profiles</v-toolbar-title>
+        <v-toolbar flat class="table-toolbar" height="56" dense>
+          <v-toolbar-title class="title">Profiles</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn @click="profileDialog = true">New Profiles</v-btn>
-
+          <v-btn color="#03A9F4" class="btn" @click="profileDialog = true">
+            <v-icon left> mdi-plus </v-icon>ADD PROFILE</v-btn
+          >
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="text-h5"
@@ -36,18 +37,30 @@
         <div>{{ getName(item) }}</div>
       </template>
       <template v-slot:item.actions="{ item }">
+        <v-btn
+          class="mx-2 text-capitalize btn-run"
+          dark
+          small
+          depressed
+          color="green"
+          @click="openBrowser(item)"
+        >
+          <!-- <v-icon x-small class="mr-2">mdi-check</v-icon> -->
+          Run
+        </v-btn>
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-        <v-btn
+
+        <!-- <v-btn
           class="ml-2 text-capitalize btn-check"
           dark
           x-small
           depressed
           color="green"
-          @click="openBrowser(item)"
+          @click="openBrowserDirectly(item)"
         >
-          <v-icon x-small class="mr-2">mdi-check</v-icon> Run
-        </v-btn>
+          <v-icon x-small class="mr-2">mdi-check</v-icon> Run Directly
+        </v-btn> -->
       </template>
     </v-data-table>
     <profile-dialog
@@ -128,6 +141,10 @@
       });
     },
     methods: {
+      async openBrowserDirectly() {
+        const browserProcess = await window.ipcRenderer.invoke("openChromium");
+        console.log("Browser", browserProcess);
+      },
       async openBrowser(item) {
         const proxy = {
           url: item["ProxyId"]
@@ -203,8 +220,17 @@
   };
 </script>
 <style lang="scss" scoped>
-  ::v-deep .v-data-table-header tr th {
-    background-color: #2196f3;
+  .table-toolbar {
+    ::v-deep .v-toolbar__content {
+      padding: 0px !important;
+    }
+  }
+  .title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333333;
+  }
+  .btn {
     color: white !important;
   }
 </style>

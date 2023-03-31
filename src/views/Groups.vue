@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid>
-    <h1>Groups</h1>
+  <v-container fluid class="pa-6">
+    <h2 class="mb-2">Groups</h2>
     <v-row>
       <v-col cols="12" md="6">
         <v-form v-model="valid">
@@ -73,7 +73,6 @@
   </v-container>
 </template>
 <script>
-  // import Group from "@/database/models/group";
   import {
     createGroup,
     updateGroup,

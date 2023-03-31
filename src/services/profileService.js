@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 const path = require("path");
 const app = require("electron").app;
-import NavigatorVendorPlugin from "puppeteer-extra-plugin-stealth/evasions/navigator.vendor";
+// import NavigatorVendorPlugin from "puppeteer-extra-plugin-stealth/evasions/navigator.vendor";
 
 const settingFolder = path.join(app.getPath("documents"), "welogin");
 // import cookiesExtraPlugin from "./profiles/cookiesExtraPlugin";
@@ -116,7 +116,10 @@ export const connectWithExtra = async function (proxy) {
     //     `--user-data-dir=${settingFolder}/profile_2`,
     //   ],
     // })
-    .launch(options)
+    .launch({
+      ...options, 
+      executablePath: "/Users/lengocanh/anhln/mmo/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium"
+    })
     .then(async (browser) => {
       console.log("Running tests..");
       const page = await browser.newPage();
@@ -127,5 +130,7 @@ export const connectWithExtra = async function (proxy) {
       // await page.screenshot({ path: "testresult.png", fullPage: true });
       // await browser.close();
       console.log(`All done, check the screenshot. ✨`);
+    }).catch(async (err) => {
+      console.log(err.message);
     });
 };
