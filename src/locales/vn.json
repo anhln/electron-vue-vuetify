@@ -1,5 +1,7 @@
 {
   "message": "Xin chào !!",
   "ip": "IP",
-  "check": "Kiểm tra"
+  "check": "Kiểm tra",
+  "cancel": "Huỷ",
+  "ok": "OK"
 }

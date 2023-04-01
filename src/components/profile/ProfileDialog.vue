@@ -1,11 +1,12 @@
 <template>
-  <v-dialog :value="value" min-width="700px">
+  <v-dialog :value="value" class="profile-dialog">
     <v-card>
       <v-card-title
         ><v-icon class="mr-2" color="blue">mdi-account-circle</v-icon>
         <h2 v-if="!edit">Create Profile</h2>
         <h2 v-else>Edit profile</h2>
         <v-spacer></v-spacer>
+
         <v-btn icon @click="close()">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -13,31 +14,35 @@
       <v-divider />
       <v-card-text class="mt-4">
         <v-container fluid>
-          <v-row
-            ><v-text-field
+          <v-row class="d-flex align-start">
+            <v-text-field
+              class="text-name"
               outlined
               dense
               label="Name"
               v-model="editedItem.name"
-            ></v-text-field>
+            >
+            </v-text-field>
             <v-select
               label="Group"
               :items="groupsList"
               item-text="name"
               item-value="id"
-              class="ml-2"
+              class="ml-2 group-select"
               outlined
               dense
               v-model="editedItem.GroupId"
             ></v-select>
-            <v-spacer></v-spacer>
-            <v-btn @click="create()">
+            <v-btn @click="close" depressed class="btn-cancel ml-4 mr-2">{{
+              $t("cancel")
+            }}</v-btn>
+            <v-btn class="btn-ok" plain @click="create()">
               <span v-if="!editedItem.id">Create</span>
               <span v-else>Edit</span></v-btn
             >
           </v-row>
           <v-row>
-            <v-col cols="12" sm="7" md="7" class="col">
+            <v-col cols="12" sm="8" md="8" class="col">
               <v-tabs v-model="tab">
                 <v-tabs-slider color="yellow"></v-tabs-slider>
                 <v-tab class="tab-item">Connection</v-tab>
@@ -49,87 +54,20 @@
                   <connection-tab v-model="editedItem"></connection-tab>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card flat class="pt-4">
-                    <v-card-text>
-                      <v-row class="text-align-center">
-                        <v-col>
-                          <h4>Browser</h4>
-                          <v-select class="ml-2" dense outlined></v-select>
-                        </v-col>
-                        <v-col>
-                          <h4>Os</h4>
-                          <v-select class="ml-2" dense outlined></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>User Agent</h4></div>
-                          <v-text-field
-                            outlined
-                            dense
-                            v-model="editedItem.userAgent"
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>Language code</h4></div>
-                          <v-text-field outlined dense></v-text-field>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>URL start</h4></div>
-                          <v-text-field outlined dense></v-text-field>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>Os font</h4></div>
-                          <v-select class="ml-2" dense outlined></v-select>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
+                  <software-tab v-model="editedItem"></software-tab>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card flat class="pt-4">
-                    <v-card-text>
-                      <v-row>
-                        <v-col>
-                          <div><h4>Screen Resolution</h4></div>
-                          <v-select
-                            class="ml-2"
-                            dense
-                            outlined
-                            :items="resolutionList"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>canvas mode</h4></div>
-                          <v-text-field outlined dense></v-text-field>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <div><h4>WebGL Renderer</h4></div>
-                          <v-text-field outlined dense></v-text-field>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
+                  <hardware-tab v-model="editedItem" />
                 </v-tab-item>
               </v-tabs-items>
             </v-col>
-            <v-col cols="12" sm="5" md="5">
+            <v-col cols="12" sm="4" md="4" class="px-0">
               <v-list dense class="list-summary">
                 <v-list-item
                   v-for="(item, i) in Object.keys(editedItem)"
                   :key="i"
                 >
-                  <v-list-item-icon class="mr-1">
+                  <v-list-item-icon class="mr-1 icon">
                     <v-icon small>mdi-check</v-icon>
                   </v-list-item-icon>
 
@@ -144,25 +82,16 @@
           </v-row>
         </v-container>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn @click="close">cancel</v-btn>
-        <v-btn class="btn-ok">OK</v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script>
-  import {
-    fetchProxyList,
-    fetchGroupsList,
-  } from "@/database/controller/welogin.controller";
-  import { aryIannaTimeZones } from "@/utils/timezones";
+  import { fetchGroupsList } from "@/database/controller/welogin.controller";
   import { generateFileName } from "@/utils/file";
-  import { webrtcList, ResolutionList } from "@/utils/webRTC";
   import _ from "lodash";
-
   import ConnectionTab from "./ConnectionTab.vue";
+  import SoftwareTab from "./SoftwareTab.vue";
+  import HardwareTab from "./HardwareTab.vue";
 
   export default {
     name: "ProfileDialog",
@@ -178,20 +107,15 @@
     },
     components: {
       ConnectionTab,
+      SoftwareTab,
+      HardwareTab,
     },
     data: () => {
       return {
         profileName: "",
-        resolutionList: ResolutionList,
-        searchTerm: "",
-        selectedTimezone: "",
-        timezonesList: aryIannaTimeZones,
-        timezonesListCopy: [],
         tab: null,
         editedItem: {},
         groupsList: [],
-        proxiesList: [],
-        // dialog: false,
         profileDefault: {
           name: "",
           GroupId: null,
@@ -230,28 +154,12 @@
         immediate: true,
       },
     },
-    mounted() {
-      this.timezonesListCopy = [...this.timezonesList];
-      this.webrtcList = Object.keys(webrtcList).map((currentItem) => {
-        return {
-          id: currentItem,
-          name: webrtcList[currentItem],
-        };
-      });
-    },
+    mounted() {},
     async created() {
-      const proxies = await fetchProxyList();
-      this.proxiesList = proxies.map((currentItem) => {
-        return {
-          id: currentItem.id,
-          name: `${currentItem.type}://${currentItem.ipport}`,
-        };
-      });
       this.groupsList = await fetchGroupsList();
     },
     methods: {
       create() {
-        console.log(this.editedItem);
         this.$emit("save", this.editedItem);
         this.close();
       },
@@ -259,19 +167,6 @@
         this.$emit("input", false);
         this.$nextTick(() => {
           this.editedItem = {};
-          //   this.editedIndex = -1;
-        });
-      },
-      searchTimezones() {
-        console.log("searchTimezones");
-        if (!this.searchTerm) {
-          this.timezonesList = this.timezonesListCopy;
-        }
-
-        this.timezonesList = this.timezonesListCopy.filter((fruit) => {
-          return (
-            fruit.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
-          );
         });
       },
     },
@@ -279,6 +174,18 @@
 </script>
 
 <style lang="scss" scoped>
+  .profile-dialog {
+    max-width: 600px;
+    min-width: 550px;
+    height: 550px;
+    width: 100%;
+  }
+  .group-select {
+    max-width: 250px;
+  }
+  .text-name {
+    max-width: 300px;
+  }
   .container {
     padding: 12px !important;
   }
@@ -295,6 +202,17 @@
     background-color: #f5f5f5;
     border: 1px solid #f5f5f5;
     border-radius: 4px;
+    .v-list-item {
+      min-height: 28px;
+      padding: 0px 8px !important;
+      .icon {
+        padding: auto !important;
+        margin: auto !important;
+      }
+      .v-list-item__content {
+        padding: 0px 0px !important;
+      }
+    }
   }
   .item-content {
     display: inline-block;

@@ -1,5 +1,7 @@
 {
   "message": "hello i18n !!",
   "ip": "IP",
-  "check": "Check"
+  "check": "Check",
+  "cancel": "Cancel",
+  "ok": "OK"
 }
