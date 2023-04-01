@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid>
-    <h1>Profiles</h1>
+  <v-container fluid class="pa-6">
     <profile-table></profile-table>
   </v-container>
 </template>

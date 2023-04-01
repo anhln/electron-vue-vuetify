@@ -1,17 +1,23 @@
 <template>
-  <v-container fluid>
-    <h1>Settings</h1>
-    <v-btn @click="openBrowser">OPEN PUPPETEER</v-btn>
+  <v-container fluid class="pa-6">
+    <v-card outlined class="pb-6 pt-4">
+      <v-card-title class="text-center">
+        <h2 class="mb-4">Settings</h2>
+        
+      </v-card-title>
+      <v-card-text>
+        <config-setting/>
+      </v-card-text>
+    </v-card>
+  
+   
   </v-container>
 </template>
 <script>
+
   export default {
-    methods: {
-      async openBrowser() {
-        // alert("OPEN PUPPETEER");
-        await window.puppeteer.open("https://google.com");
-        console.log("OPENED");
-      },
+    components: {
+      'config-setting': () => import ('@/components/setting/ConfigSetting.vue')
     },
   };
 </script>

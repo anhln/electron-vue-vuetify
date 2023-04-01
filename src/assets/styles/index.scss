@@ -1,0 +1,76 @@
+/*----------------Variables-------------------*/
+$blue-base: #03A9F4;
+$blue-base-light: #E1F5FE;
+$black-base: #333333;
+body {
+    font-size: 14px;
+    input {
+        font-size: inheritpx;
+    }
+}
+
+h1 {
+    font-size: 2.0rem;
+    font-weight: 700;
+    color: $black-base;
+}
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $black-base;
+}
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $black-base;
+}
+h4 {
+    font-size: 14;
+    font-weight: 600;
+    color: $black-base;
+}
+
+.btn-default {
+    ::v-deep .v-btn__content{
+        text-transform: none;
+    }
+}
+.btn-ok {
+    @extend .btn-default;
+    min-height: 40px;
+    background-color: $blue-base-light;
+    color: $black-base;
+    border: 1px solid $blue-base;
+    &:hover{
+        background-color: $blue-base;
+        color: white;
+    }
+}
+.btn-run {
+    @extend .btn-default;
+    background-color: white !important;
+    border: 1px solid $blue-base !important;
+    color: $blue-base;
+}
+.btn-cancel {
+    @extend .btn-default;
+    min-height: 40px;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    color: $black-base;
+    &:hover {
+        color: $blue-base;
+        border: 1px solid $blue-base !important;
+    }
+
+}
+.table-default {
+    ::v-deep .v-data-table-header tr th {
+        background-color: #03A9F4;
+        color: white !important;
+      }
+      ::v-deep .v-data-table__wrapper{
+        border-left: 1px solid #EEEEEE;
+        border-right: 1px solid #EEEEEE;
+      }
+}

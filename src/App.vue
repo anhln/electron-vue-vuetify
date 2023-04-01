@@ -10,7 +10,9 @@
       //
     }),
     async mounted() {
-      await window.files.read();
+      await window.ipcRenderer.invoke("my-read").then((result) => {
+        console.log(result);
+      });
     },
   };
 </script>
