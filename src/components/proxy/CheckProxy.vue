@@ -67,10 +67,8 @@
     },
     methods: {
       async checkProxy() {
-        console.log("-----------CHecking-------: ", this.proxyAddress);
         await window.ipcRenderer.invoke("checkProxyStatus").then((result) => {
           this.proxyStatus = result;
-          console.log(result);
         });
       },
       async checkProxyByUserPassword() {
@@ -79,7 +77,6 @@
           .invoke("checkProxyByUserPassword", address, "anhln", "anhday")
           .then((result) => {
             this.proxyStatus = result;
-            console.log(result);
           });
       },
     },

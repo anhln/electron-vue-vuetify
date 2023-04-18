@@ -49,7 +49,3 @@ export default class cookiesExtraPlugin extends PuppeteerExtraPlugin {
     console.log("LOG ONDISCONECTED CUSTOMIZED PLUGIN");
   }
 }
-
-// module.exports = function (pluginConfig) {
-//   return new Plugin(pluginConfig);
-// };

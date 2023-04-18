@@ -1,6 +1,10 @@
 import puppeteer from "puppeteer";
+const dom = require("xmldom").DOMParser;
+const xpath = require("xpath");
+
 const path = require("path");
 const app = require("electron").app;
+
 // import NavigatorVendorPlugin from "puppeteer-extra-plugin-stealth/evasions/navigator.vendor";
 
 const settingFolder = path.join(app.getPath("documents"), "welogin");
@@ -38,7 +42,6 @@ export const connect = async function (proxy) {
     ],
   };
   const browser = await puppeteer.launch(options);
-  console.log(browser);
   const page = (await browser.pages())[0];
   await page.setUserAgent(
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
@@ -117,8 +120,9 @@ export const connectWithExtra = async function (proxy) {
     //   ],
     // })
     .launch({
-      ...options, 
-      executablePath: "/Users/lengocanh/anhln/mmo/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium"
+      ...options,
+      executablePath:
+        "/Users/lengocanh/anhln/mmo/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium",
     })
     .then(async (browser) => {
       console.log("Running tests..");
@@ -130,7 +134,124 @@ export const connectWithExtra = async function (proxy) {
       // await page.screenshot({ path: "testresult.png", fullPage: true });
       // await browser.close();
       console.log(`All done, check the screenshot. ✨`);
-    }).catch(async (err) => {
+    })
+    .catch(async (err) => {
       console.log(err.message);
     });
 };
+
+export const runPuppeteer = async function (config) {
+  const { domain, destinationUrl, password, profileName, userAgent } = config;
+  const options = {
+    headless: false,
+    args: [
+      "--disable-webgl",
+      "--no-sandbox",
+      "--enable-features=NetworkService",
+      "--ignore-certificate-errors",
+      // `--proxy-server=${url}`,
+      // `--user-data-dir=${settingFolder}/${profileName}`,
+    ],
+  };
+  const puppeteer = require("puppeteer-extra");
+  const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+  const stealth = StealthPlugin();
+  puppeteer.use(stealth);
+
+  puppeteer
+    .launch({
+      ...options,
+    })
+    .then(async (browser) => {
+      console.log("Running tests..");
+      const page = await browser.newPage();
+
+      // await page.goto("https://www.google.com");
+      await page.goto(destinationUrl);
+
+      // Type search query
+      const searchQuery = domain;
+      await page.type('textarea[name="q"]', searchQuery);
+      // await typeWithDelay(page, 'input[name="q"]', searchQuery, 100);
+
+      // Press enter to submit the search
+      await page.keyboard.press("Enter");
+
+      // Wait for search results to load
+      await page.waitForNavigation();
+      await page.waitForTimeout(5000);
+
+      const hrefs = await page.evaluate(() => {
+        const linkSnapshot = document.evaluate(
+          "//a[@href]",
+          document,
+          null,
+          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+          null
+        );
+        const hrefs = [];
+        for (let i = 0; i < linkSnapshot.snapshotLength; i++) {
+          const link = linkSnapshot.snapshotItem(i);
+          hrefs.push(link.href);
+        }
+        return hrefs;
+      });
+
+      // const urls = generateRegularExpression(domain);
+      // console.log(urls);
+      const links = hrefs.filter(
+        (href) =>
+          href.match(generateRegExp(`https://${domain}`)) ||
+          href.match(generateRegExp(`http://${domain}`))
+      );
+
+      for (const link of links) {
+        await Promise.all([page.goto(link), page.waitForNavigation]);
+        await page.evaluate(async () => {
+          await new Promise((resolve, reject) => {
+            let totalHeight = 0;
+            const distance = 100;
+            const timer = setInterval(() => {
+              const scrollHeight = document.body.scrollHeight;
+              window.scrollBy(0, distance);
+              totalHeight += distance;
+              if (totalHeight >= scrollHeight) {
+                clearInterval(timer);
+                resolve();
+              }
+            }, 100);
+          });
+        });
+      }
+
+      await browser.close();
+
+      console.log(`Clicked on first link: ${await page.title()}`);
+    })
+    .catch(async (err) => {
+      console.log(err.message);
+    });
+};
+
+async function typeWithDelay(page, selector, text, delay) {
+  const element = await page.$(selector);
+  for (let i = 0; i < text.length; i++) {
+    await element.type(text[i], { delay: delay });
+  }
+}
+
+function generateRegularExpression(domain) {
+  const parts = domain.split(".");
+  return [`/https\:\/\/${parts.join(".")}`, `/http\:\/${parts.join(".")}`];
+}
+
+function generateRegExp(input) {
+  // Escape any special characters in the input string
+  const escapedInput = input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  // Generate a regular expression pattern that matches the input string
+  const pattern = new RegExp(escapedInput, "i");
+
+  return pattern;
+}

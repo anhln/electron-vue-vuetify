@@ -45,22 +45,10 @@
           color="green"
           @click="openBrowser(item)"
         >
-          <!-- <v-icon x-small class="mr-2">mdi-check</v-icon> -->
           Run
         </v-btn>
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-
-        <!-- <v-btn
-          class="ml-2 text-capitalize btn-check"
-          dark
-          x-small
-          depressed
-          color="green"
-          @click="openBrowserDirectly(item)"
-        >
-          <v-icon x-small class="mr-2">mdi-check</v-icon> Run Directly
-        </v-btn> -->
       </template>
     </v-data-table>
     <profile-dialog
@@ -142,8 +130,7 @@
     },
     methods: {
       async openBrowserDirectly() {
-        const browserProcess = await window.ipcRenderer.invoke("openChromium");
-        console.log("Browser", browserProcess);
+        await window.ipcRenderer.invoke("openChromium");
       },
       async openBrowser(item) {
         const proxy = {
@@ -155,11 +142,8 @@
           profileName: item.name,
           userAgent: item.userAgent,
         };
-        console.log(proxy);
         // await window.ipcRenderer.invoke("connect", proxy);
         await window.ipcRenderer.invoke("connectWithExtra", proxy);
-
-        console.log("OPENED", proxy);
       },
       getName(item) {
         return item.ProxyId
@@ -168,13 +152,11 @@
       },
       async fetchProfileList() {
         this.profileList = await fetchProfilesList();
-        console.log(this.profileList);
       },
 
       editItem(item) {
         this.editedIndex = this.profileList.indexOf(item);
         this.editedItem = Object.assign({}, item);
-        console.log(this.editedItem);
         this.profileDialog = true;
       },
 
@@ -205,13 +187,10 @@
         });
       },
       async save(item) {
-        console.log("result", item);
         if (!item?.id) {
           await createProfile(item);
         } else {
-          // console.log(this.editedItem);
-          const result = await updateProfile(item);
-          console.log(result);
+          await updateProfile(item);
         }
         this.fetchProfileList();
         this.close();
@@ -219,6 +198,7 @@
     },
   };
 </script>
+
 <style lang="scss" scoped>
   .table-toolbar {
     ::v-deep .v-toolbar__content {

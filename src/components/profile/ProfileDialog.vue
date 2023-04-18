@@ -142,7 +142,6 @@
     watch: {
       profileItem: {
         handler(newval) {
-          console.log("this.profileItem", newval);
           this.profileDefault.name = _.isEmpty(newval)
             ? `Profile_${generateFileName()}`
             : "";

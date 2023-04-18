@@ -1,8 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
 
-// const isBuild = process.env.NODE_ENV === "production";
-
 export async function read() {
   try {
     const data = await fs.readFile(
@@ -11,7 +9,6 @@ export async function read() {
         encoding: "utf8",
       }
     );
-    console.log(data);
     return data;
   } catch (error) {
     console.log(error);

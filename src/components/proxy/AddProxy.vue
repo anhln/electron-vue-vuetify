@@ -76,7 +76,6 @@
     },
     mounted() {
       this.typesList = proxies.proxyTypes;
-      //   console.log(this.typesList);
     },
   };
 </script>

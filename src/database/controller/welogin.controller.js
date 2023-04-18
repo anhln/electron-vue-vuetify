@@ -13,7 +13,6 @@ export const createProxy = (proxy) => {
     status: proxy.status,
   })
     .then((proxy) => {
-      console.log(">> Created proxy: " + JSON.stringify(proxy, null, 4));
       return proxy;
     })
     .catch((err) => {

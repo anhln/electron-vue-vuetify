@@ -14,7 +14,13 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="#03A9F4" dark class="btn-default" v-bind="attrs" v-on="on">
+              <v-btn
+                color="#03A9F4"
+                dark
+                class="btn-default"
+                v-bind="attrs"
+                v-on="on"
+              >
                 ADD PROXY
               </v-btn>
             </template>
@@ -253,7 +259,6 @@
       },
       async save() {
         if (this.editedIndex > -1) {
-          console.log(this.editedItem);
           await updateProxy(this.editedItem);
         } else {
           await createProxy(this.editedItem);
@@ -266,8 +271,8 @@
 </script>
 <style lang="scss" scoped>
   .table-toolbar {
-  ::v-deep .v-toolbar__content {
-    padding: 0px !important;
+    ::v-deep .v-toolbar__content {
+      padding: 0px !important;
     }
   }
   .btn-check {

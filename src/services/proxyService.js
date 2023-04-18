@@ -89,11 +89,8 @@ export async function checkProxyStatus(proxy) {
   opts.agent = agent;
 
   const res = http.get(opts);
-  //  function (res) {
-  // console.log('"response" event!', res.headers);
   res.pipe(process.stdout);
   const { statusCode } = res;
-  // const contentType = res.headers["content-type"];
   if (statusCode === 200) {
     return "ALIVE";
   } else return "DIE";
@@ -111,7 +108,6 @@ export async function checkProxyByUserPassword(address, username, password) {
   const agent = new SocksProxyAgent(info);
 
   https.get("https://ipinfo.io", { agent }, (res) => {
-    console.log(res);
     res.pipe(process.stdout);
   });
 }

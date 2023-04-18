@@ -8,15 +8,14 @@ import {
   checkProxyByUserPassword,
 } from "./proxyService";
 
-import { connect, connectWithExtra } from "./profileService";
+import { connect, connectWithExtra, runPuppeteer } from "./profileService";
 
 import { getProfilesDirectory, saveProfilesDirectory } from "./filesService";
 
-import { runChrome } from "./runChromium"
+import { runChrome } from "./runChromium";
 
 export async function ipcMainHandle() {
   ipcMain.handle("my-read", async () => {
-    console.log("READING -------");
     const result = await read();
     return result;
   });
@@ -73,13 +72,18 @@ export async function ipcMainHandle() {
     return result;
   });
 
+  ipcMain.handle("runPuppeteer", async (event, proxy) => {
+    const result = await runPuppeteer(proxy);
+    return result;
+  });
+
   // ------------------- Files services -------------*/
-  ipcMain.handle('getProfilesDirectory', async () => {
-    // check if profileDirectory exist 
+  ipcMain.handle("getProfilesDirectory", async () => {
+    // check if profileDirectory exist
     const profileDirectory = await getProfilesDirectory();
     return profileDirectory;
   });
-  
+
   ipcMain.handle("save-profiles-directory", async (event, profileDirectory) => {
     return await saveProfilesDirectory(profileDirectory);
   });
@@ -88,15 +92,12 @@ export async function ipcMainHandle() {
     return dialog.showOpenDialogSync(null, {
       title: title,
       properties: ["openDirectory", "createDirectory"],
-    })
+    });
   });
 
   //--------------------Chromium services ----------------------
-ipcMain.handle("openChromium", async (event, options) =>{
-  const child = runChrome();
-  return child;
-})
+  ipcMain.handle("openChromium", async (event, options) => {
+    const child = runChrome();
+    return child;
+  });
 }
-
-
-

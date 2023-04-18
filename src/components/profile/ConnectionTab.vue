@@ -153,7 +153,6 @@
     },
     methods: {
       searchTimezones() {
-        console.log("searchTimezones");
         if (!this.searchTerm) {
           this.timezonesList = this.timezonesListCopy;
         }
