@@ -9,8 +9,8 @@
 </template>
 
 <script>
-  import AppBar from "@/layout/AppBar.vue";
-  import SideBar from "@/layout/SideBar.vue";
+  import AppBar from "@/renderer/layout/AppBar.vue";
+  import SideBar from "@/renderer/layout/SideBar.vue";
 
   export default {
     name: "Home",

@@ -11,6 +11,7 @@ import {
 import { connect, connectWithExtra, runPuppeteer } from "./profileService";
 
 import { getProfilesDirectory, saveProfilesDirectory } from "./filesService";
+import { runPuppeteerWithScript } from "./automationService";
 
 import { runChrome } from "./runChromium";
 
@@ -28,8 +29,7 @@ export async function ipcMainHandle() {
 
   ipcMain.handle("checkProxy", async (event, proxy) => {
     try {
-      const result = await checkProxy(proxy);
-      console.log(result.headers);
+      await checkProxy(proxy);
       return "OK";
     } catch (error) {
       console.log(error);
@@ -39,14 +39,14 @@ export async function ipcMainHandle() {
 
   ipcMain.handle("checkHttpProxy", async (event, proxy) => {
     try {
-      const result = await checkHttpProxy(proxy);
-      console.log(result.headers);
+      await checkHttpProxy(proxy);
       return "OK";
     } catch (error) {
       console.log(error);
       return "DIE";
     }
   });
+
   ipcMain.handle("checkProxyStatus", async (event, proxy) => {
     const proxyStatus = await checkProxyStatus(proxy);
     return proxyStatus;
@@ -99,5 +99,10 @@ export async function ipcMainHandle() {
   ipcMain.handle("openChromium", async (event, options) => {
     const child = runChrome();
     return child;
+  });
+
+  // ----------------------AUTOMATION ---------------------//
+  ipcMain.handle("runPuppeteerWithScript", async (event, options) => {
+    return runPuppeteerWithScript();
   });
 }

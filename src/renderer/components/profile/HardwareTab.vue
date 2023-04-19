@@ -34,7 +34,7 @@
 </template>
 <script>
   import { cloneDeep } from "lodash";
-  import { ResolutionList } from "@/utils/webRTC";
+  import { ResolutionList } from "@/renderer/utils/webRTC";
 
   export default {
     name: "HardwareTab",

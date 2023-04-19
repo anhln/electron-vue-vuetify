@@ -1,14 +1,14 @@
 import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
-import vuetify from "./plugins/vuetify";
-import i18n from "./setup/i18n";
+import App from "./renderer/App.vue";
+import router from "./renderer/router";
+import store from "./renderer/store";
+import vuetify from "./renderer/plugins/vuetify";
+import i18n from "./renderer/setup/i18n";
 
 Vue.config.productionTip = false;
 
 Vue.component("loading-button", () =>
-  import("@/components/base/LoadingButton")
+  import("@/renderer/components/base/LoadingButton")
 );
 
 new Vue({

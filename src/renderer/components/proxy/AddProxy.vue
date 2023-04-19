@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import * as proxies from "@/utils/proxies";
+  import * as proxies from "@/renderer/utils/proxies";
 
   export default {
     data: () => ({

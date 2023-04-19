@@ -7,27 +7,22 @@ module.exports = defineConfig({
     externals: {
       sequelize: "require('sequelize')",
     },
-    // resolve: {
-    //   fallback: {
-    //     fs: false,
-    //     crypto: false,
-    //   },
-    // },
-    // // target: "electron-main",
-    // target: ["node"],
   },
   css: {
     loaderOptions: {
       scss: {
-        additionalData: `@import "@/assets/styles/index.scss";`,
-      }
-    }
+        additionalData: `@import "@/renderer/assets/styles/index.scss";`,
+      },
+    },
   },
   transpileDependencies: ["vuetify"],
   pluginOptions: {
     electronBuilder: {
-      mainProcessWatch: ["src/services/profileService.js", 
-      "src/services/ipcService.js", "src/services/filesService.js"], // change to your file
+      mainProcessWatch: [
+        "src/services/profileService.js",
+        "src/services/ipcService.js",
+        "src/services/filesService.js",
+      ], // change to your file
       chainWebpackMainProcess: (config) => {
         config.module
           .rule("unlazy-loader")
@@ -87,10 +82,10 @@ module.exports = defineConfig({
       nodeModulesPath: ["./node_modules", "./src/services/profiles"],
     },
     i18n: {
-        locale: "en",
-        fallbackLocale: "en",
-        localeDir: "locales",
-        enableInSFC: false
-    }
+      locale: "en",
+      fallbackLocale: "en",
+      localeDir: "locales",
+      enableInSFC: false,
+    },
   },
 });

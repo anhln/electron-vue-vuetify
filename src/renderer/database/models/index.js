@@ -33,6 +33,7 @@ db.profiles = Profile(sequelize, Sequelize);
 db.proxies.hasMany(db.profiles);
 db.groups.hasMany(db.profiles);
 db.profiles.belongsTo(db.proxies);
+
 // db.sequelize.sync({
 //   alter: true,
 // });

@@ -77,7 +77,7 @@
     createGroup,
     updateGroup,
     fetchGroupsList,
-  } from "@/database/controller/welogin.controller";
+  } from "@/renderer/database/controller/welogin.controller";
   import * as _ from "lodash";
 
   export default {

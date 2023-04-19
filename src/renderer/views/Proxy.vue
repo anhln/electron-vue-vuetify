@@ -4,7 +4,7 @@
   </v-container>
 </template>
 <script>
-  import ProxyTable from "@/components/proxy/ProxyTable.vue";
+  import ProxyTable from "@/renderer/components/proxy/ProxyTable.vue";
 
   export default {
     components: { ProxyTable },

@@ -66,7 +66,7 @@
     updateProfile,
     fetchProfilesList,
     fetchProxyList,
-  } from "@/database/controller/welogin.controller";
+  } from "@/renderer/database/controller/welogin.controller";
 
   export default {
     components: {

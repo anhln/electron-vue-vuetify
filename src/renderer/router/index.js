@@ -19,19 +19,19 @@ const routes = [
         path: "/groups",
         name: "Groups",
         component: () =>
-          import(/* webpackChunkName: "about" */ "@/views/Groups.vue"),
+          import(/* webpackChunkName: "about" */ "@/renderer/views/Groups.vue"),
       },
       {
         path: "/settings",
         name: "Settings",
         component: () =>
-          import(/* webpackChunkName: "about" */ "@/views/Settings.vue"),
+          import(/* webpackChunkName: "about" */ "@/renderer/views/Settings.vue"),
       },
       {
         path: "/proxy",
         name: "Proxy",
         component: () =>
-          import(/* webpackChunkName: "about" */ "@/views/Proxy.vue"),
+          import(/* webpackChunkName: "about" */ "@/renderer/views/Proxy.vue"),
       },
       {
         path: "/about",

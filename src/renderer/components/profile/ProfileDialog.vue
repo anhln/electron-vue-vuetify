@@ -86,8 +86,8 @@
   </v-dialog>
 </template>
 <script>
-  import { fetchGroupsList } from "@/database/controller/welogin.controller";
-  import { generateFileName } from "@/utils/file";
+  import { fetchGroupsList } from "@/renderer/database/controller/welogin.controller";
+  import { generateFileName } from "@/renderer/utils/file";
   import _ from "lodash";
   import ConnectionTab from "./ConnectionTab.vue";
   import SoftwareTab from "./SoftwareTab.vue";

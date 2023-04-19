@@ -86,9 +86,9 @@
 </template>
 
 <script>
-  import { fetchProxyList } from "@/database/controller/welogin.controller";
-  import { aryIannaTimeZones } from "@/utils/timezones";
-  import { webrtcList, GEOLocation, ResolutionList } from "@/utils/webRTC";
+  import { fetchProxyList } from "@/renderer/database/controller/welogin.controller";
+  import { aryIannaTimeZones } from "@/renderer/utils/timezones";
+  import { webrtcList, GEOLocation, ResolutionList } from "@/renderer/utils/webRTC";
 
   import { cloneDeep } from "lodash";
 

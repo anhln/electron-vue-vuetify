@@ -1,15 +1,9 @@
 import puppeteer from "puppeteer";
-const dom = require("xmldom").DOMParser;
-const xpath = require("xpath");
 
 const path = require("path");
 const app = require("electron").app;
 
-// import NavigatorVendorPlugin from "puppeteer-extra-plugin-stealth/evasions/navigator.vendor";
-
 const settingFolder = path.join(app.getPath("documents"), "welogin");
-// import cookiesExtraPlugin from "./profiles/cookiesExtraPlugin";
-// import HelloWorldPlugin from "./profiles/helloWorldPlugin";
 
 export const connect = async function (proxy) {
   const { url, username, password, profileName } = proxy;
@@ -164,16 +158,22 @@ export const runPuppeteer = async function (config) {
       ...options,
     })
     .then(async (browser) => {
-      console.log("Running tests..");
+      app.loggingService.log("Running browser ...");
       const page = await browser.newPage();
 
-      // await page.goto("https://www.google.com");
       await page.goto(destinationUrl);
 
       // Type search query
       const searchQuery = domain;
-      await page.type('textarea[name="q"]', searchQuery);
-      // await typeWithDelay(page, 'input[name="q"]', searchQuery, 100);
+      app.loggingService.log(`Openning ${domain}`);
+
+      try {
+        await page.type('textarea[name="q"]', searchQuery);
+      } catch (error) {
+        app.loggingService.log("Can not type search query");
+        // try another way
+        await typeWithDelay(page, 'input[name="q"]', searchQuery, 100);
+      }
 
       // Press enter to submit the search
       await page.keyboard.press("Enter");
@@ -198,39 +198,30 @@ export const runPuppeteer = async function (config) {
         return hrefs;
       });
 
-      // const urls = generateRegularExpression(domain);
-      // console.log(urls);
       const links = hrefs.filter(
         (href) =>
           href.match(generateRegExp(`https://${domain}`)) ||
           href.match(generateRegExp(`http://${domain}`))
       );
 
+      // Click on the links have domain
       for (const link of links) {
-        await Promise.all([page.goto(link), page.waitForNavigation]);
-        await page.evaluate(async () => {
-          await new Promise((resolve, reject) => {
-            let totalHeight = 0;
-            const distance = 100;
-            const timer = setInterval(() => {
-              const scrollHeight = document.body.scrollHeight;
-              window.scrollBy(0, distance);
-              totalHeight += distance;
-              if (totalHeight >= scrollHeight) {
-                clearInterval(timer);
-                resolve();
-              }
-            }, 100);
-          });
-        });
+        try {
+          await Promise.all([page.goto(link), page.waitForNavigation]);
+        } catch (error) {
+          app.loggingService.log(error.message);
+        }
       }
-
-      await browser.close();
-
-      console.log(`Clicked on first link: ${await page.title()}`);
+      try {
+        await browser.close();
+        app.loggingService.log(`Closed ${domain}`);
+      } catch (error) {
+        app.loggingService.log(error.message);
+        app.loggingService.log(`Closed ${domain}`);
+      }
     })
     .catch(async (err) => {
-      console.log(err.message);
+      app.loggingService.log(err.message);
     });
 };
 
@@ -254,4 +245,22 @@ function generateRegExp(input) {
   const pattern = new RegExp(escapedInput, "i");
 
   return pattern;
+}
+
+async function scrollToBottom(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve, reject) => {
+      let totalHeight = 0;
+      const distance = 100;
+      const timer = setInterval(() => {
+        const scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 100);
+    });
+  });
 }

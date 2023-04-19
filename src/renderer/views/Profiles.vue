@@ -4,7 +4,7 @@
   </v-container>
 </template>
 <script>
-  import ProfileTable from "@/components/ProfileTable.vue";
+  import ProfileTable from "@/renderer/components/ProfileTable.vue";
 
   export default {
     name: "Profiles",

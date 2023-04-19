@@ -3,9 +3,14 @@
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+
+import { ipcMainHandle } from "./main/services/ipcService";
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 const path = require("path");
-import { ipcMainHandle } from "./services/ipcService";
+const loggingService = require("./main/services/logging");
+
+loggingService.getInstance().log("Starting app...");
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -17,6 +22,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname, "Icon-36.png"),
     webPreferences: {
       // Required for Spectron testing
       // enableRemoteModule: !!process.env.IS_TEST,
@@ -30,16 +36,21 @@ async function createWindow() {
     },
   });
 
+  // Attach logging service instance to app object
+  app.loggingService = loggingService.getInstance();
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
     if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
-    // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
   win.maximize();
+
+  const newIconPath = path.join(__dirname, "Icon-36.png");
+  win.setIcon(newIconPath);
 }
 
 // Quit when all windows are closed.
